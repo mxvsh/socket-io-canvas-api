@@ -132,6 +132,7 @@
 					ctx.lineTo(e.offsetX, e.offsetY);
 					ctx.strokeStyle = color;
 					ctx.lineWidth = lineWidth;
+					ctx.lineCap = 'round';
 					ctx.stroke();
 
 					const data = {
@@ -163,6 +164,7 @@
 				ctx.lineTo(data.offsetX, data.offsetY);
 				ctx.strokeStyle = data.color;
 				ctx.lineWidth = data.lineWidth;
+				ctx.lineCap = 'round';
 				ctx.stroke();
 			});
 		});
