@@ -8,10 +8,74 @@
 	</head>
 	<body>
 		<canvas id="canvas"></canvas>
+		<div class="color-picker">
+			<div
+				class="color"
+				style="background-color: black"
+				onclick="setColor('black')"
+			></div>
+			<div
+				class="color"
+				style="background-color: red"
+				onclick="setColor('red')"
+			></div>
+			<div
+				class="color"
+				style="background-color: blue"
+				onclick="setColor('blue')"
+			></div>
+			<div
+				class="color"
+				style="background-color: green"
+				onclick="setColor('green')"
+			></div>
+		</div>
 	</body>
 
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+		}
+		.color-picker {
+			position: fixed;
+			top: 10px;
+			left: 10px;
+			width: 100%;
+			display: flex;
+			justify-content: center;
+			padding: 10px;
+			background-color: #f1f1f1;
+		}
+		.color {
+			width: 30px;
+			height: 30px;
+			border-radius: 50%;
+			margin: 0 10px;
+			cursor: pointer;
+		}
+	</style>
+
 	<script>
+		let color = 'black';
+
+		const cursor = document.createElement('div');
+		cursor.id = 'cursor';
+		cursor.style.position = 'absolute';
+		cursor.style.width = '10px';
+		cursor.style.height = '10px';
+		cursor.style.borderRadius = '50%';
+		cursor.style.backgroundColor = 'black';
+		cursor.style.pointerEvents = 'none';
+
+		function setColor(clr) {
+			color = clr;
+			document.getElementById('cursor').style.backgroundColor = clr;
+		}
+
 		document.addEventListener('DOMContentLoaded', () => {
+			document.body.appendChild(cursor);
+
 			const socket = io();
 
 			/** @type HTMLCanvasElement **/
@@ -32,10 +96,14 @@
 			});
 
 			canvas.addEventListener('mousemove', (e) => {
+				cursor.style.top = `${e.clientY}px`;
+				cursor.style.left = `${e.clientX}px`;
+
 				if (isDrawing) {
 					ctx.beginPath();
 					ctx.moveTo(lastX, lastY);
 					ctx.lineTo(e.offsetX, e.offsetY);
+					ctx.strokeStyle = color;
 					ctx.stroke();
 
 					const data = {
@@ -44,6 +112,7 @@
 						offsetX: e.offsetX,
 						offsetY: e.offsetY,
 						id: socket.id,
+						color,
 					};
 
 					socket.emit('draw', data);
@@ -63,6 +132,7 @@
 				ctx.beginPath();
 				ctx.moveTo(data.lastX, data.lastY);
 				ctx.lineTo(data.offsetX, data.offsetY);
+				ctx.strokeStyle = data.color;
 				ctx.stroke();
 			});
 		});
