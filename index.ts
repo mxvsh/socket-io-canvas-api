@@ -21,7 +21,12 @@ io.on('connection', (socket) => {
 	console.log(`${socket.id} connected`);
 
 	socket.on('draw', (data) => {
-		socket.broadcast.emit('draw', data);
+		const { roomId } = data;
+		socket.to(roomId).emit('draw', data);
+	});
+
+	socket.on('join', (roomId) => {
+		socket.join(roomId);
 	});
 
 	socket.on('disconnect', () => {
