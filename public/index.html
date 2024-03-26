@@ -30,6 +30,15 @@
 				onclick="setColor('green')"
 			></div>
 		</div>
+		<div class="line-width">
+			<input
+				type="range"
+				min="1"
+				max="100"
+				value="1"
+				oninput="setLineWidth(this.value)"
+			/>
+		</div>
 	</body>
 
 	<style>
@@ -54,10 +63,22 @@
 			margin: 0 10px;
 			cursor: pointer;
 		}
+
+		.line-width {
+			position: fixed;
+			bottom: 10px;
+			right: 10px;
+			width: 100%;
+			display: flex;
+			justify-content: center;
+			padding: 10px;
+			background-color: #f1f1f1;
+		}
 	</style>
 
 	<script>
 		let color = 'black';
+		let lineWidth = 10;
 
 		const cursor = document.createElement('div');
 		cursor.id = 'cursor';
@@ -71,6 +92,12 @@
 		function setColor(clr) {
 			color = clr;
 			document.getElementById('cursor').style.backgroundColor = clr;
+		}
+
+		function setLineWidth(width) {
+			lineWidth = width;
+			cursor.style.width = `${width}px`;
+			cursor.style.height = `${width}px`;
 		}
 
 		document.addEventListener('DOMContentLoaded', () => {
@@ -104,6 +131,7 @@
 					ctx.moveTo(lastX, lastY);
 					ctx.lineTo(e.offsetX, e.offsetY);
 					ctx.strokeStyle = color;
+					ctx.lineWidth = lineWidth;
 					ctx.stroke();
 
 					const data = {
@@ -113,6 +141,7 @@
 						offsetY: e.offsetY,
 						id: socket.id,
 						color,
+						lineWidth,
 					};
 
 					socket.emit('draw', data);
@@ -133,6 +162,7 @@
 				ctx.moveTo(data.lastX, data.lastY);
 				ctx.lineTo(data.offsetX, data.offsetY);
 				ctx.strokeStyle = data.color;
+				ctx.lineWidth = data.lineWidth;
 				ctx.stroke();
 			});
 		});
